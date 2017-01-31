@@ -7,6 +7,12 @@
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+var mysql = require('mysql')
+var connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'santhu21'
+})
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -24,6 +30,12 @@ router.get('/', function(req, res) {
     var id = req.param('id');
     var lat = req.param('lat');
     var lng = req.param('lng');
+    connection.connect();
+    //connection.query('INSERT into user_location values ('.concat(), function (err, rows, fields) {
+      if (err) throw err
+          console.log('The solution is: ', rows[0].solution)
+    })
+    connection.end()
     res.json({ message: 'OK' });   
 });
 
