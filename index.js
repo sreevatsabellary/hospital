@@ -57,8 +57,13 @@ router.get('/', function(req, res) {
         if (error) throw new Error(error);
         if (!error && response.statusCode == 200){
           var data = JSON.parse(body);
-          var hospitalInfo = {name:data.results[0].name, user_lat: lat, user_lng: lng, hospital_lat:data.results[0].geometry.location.lat, hospital_lng:data.results[0].geometry.location.lng};
-          res.json({ message: hospitalInfo });
+          try{
+          	    var hospitalInfo = {name:data.results[0].name, user_lat: lat, user_lng: lng, hospital_lat:data.results[0].geometry.location.lat, hospital_lng:data.results[0].geometry.location.lng};
+          	    res.json({ message: hospitalInfo });
+          }catch(err) {
+    		res.json({ message: "ERROR" });
+		  }
+          
         }else{
           res.json({ message: "ERROR" });
         }
