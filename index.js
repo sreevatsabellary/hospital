@@ -94,7 +94,7 @@ router.get('/patient', function(req, res) {
     		res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
     		return;
     	}
-    	var tokenQueryString = "SELECT token from firebase_tokens where ambulance_id= \'"result[0].ambulance_id+"\'";
+    	var tokenQueryString = "SELECT token from firebase_tokens where ambulance_id= \'"+result[0].ambulance_id+"\'";
     	connection.query(tokenQueryString, function(tokenErr, tokenResult, tokenFields){
     		if(tokenErr){
     			res.json({ status: 500, message: "ERROR", error: tokenErr.code});
@@ -108,7 +108,7 @@ router.get('/patient', function(req, res) {
     		var registrationToken = tokenResult[0].token;
     		var payload = {
 			  data: {
-			  	patient_id: patient_id,
+			  	patient_id: patient_id.toString(),
 			    patient_lat: patient_lat.toString(),
 			    patient_lng: patient_lng.toString()
 			  }
@@ -126,6 +126,19 @@ router.get('/patient', function(req, res) {
 			  });
     	});
 		//var registrationToken = "e0OvqyBhNBI:APA91bFCQHQ7Xre2QMl5wOTo8Trx83NcJvo-M1H7HtXOGhZWmCK5zfui29_QvxVa1JpIBz6M7GKzfeinRLBH1TaED1D1gBONPf8p0fgO0Jgz4HUq7sv6fpf0b9R19wiUmTXotvssuyXg";
+		
+
+		admin.messaging().sendToDevice(registrationToken, payload)
+		  .then(function(response) {
+		    // See the MessagingDevicesResponse reference documentation for
+		    // the contents of response.
+		    console.log("Successfully sent message:", response);
+    		res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng});
+		  })
+		  .catch(function(error) {
+		    console.log("Error sending message:", error);
+    		res.json({status: 500, message: "FCM_FAILED"});
+		  });
     	/*console.log(result);
     	console.log(result.length);
     	console.log(result[0]);
