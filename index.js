@@ -140,6 +140,7 @@ router.post('/ambulance/registertoken', function(req, res) {
     	}
     	res.json({ status: 200, message: "TOKEN_UPDATED"});
     })
+    console.log(query.sql)
 
 });
 
