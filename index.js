@@ -108,7 +108,7 @@ router.get('/patient', function(req, res) {
     		var registrationToken = tokenResult[0].token;
     		var payload = {
 			  data: {
-			  	patient_id: patient_id.toString(),
+			  	patient_id: patient_id,
 			    patient_lat: patient_lat.toString(),
 			    patient_lng: patient_lng.toString()
 			  }
