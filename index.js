@@ -131,7 +131,7 @@ router.post('/ambulance/registertoken', function(req, res) {
     	token : ambulance_token
     };
 
-    var queryString = 'INSERT INTO firebase_tokens SET ?  ON DUPLICATE KEY UPDATE ambulance_id='+queryData.ambulance_id+', token = '+queryData.token;
+    var queryString = 'INSERT INTO firebase_tokens SET ?  ON DUPLICATE KEY UPDATE ambulance_id=\''+queryData.ambulance_id+'\', token = \''+queryData.token+'\'';
     var query = connection.query(queryString, queryData, function(err, result){
     	if (err) {
     		res.json({ status: 500, message: "ERROR", error: err.code});
