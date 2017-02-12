@@ -12,9 +12,16 @@ var mysql = require('mysql')
 var connection = mysql.createConnection({
  host: 'localhost',
  user: 'root',
- password: 'santhu21',
+ password: 'root',
  database: 'hospital'
 })
+
+var admin = require("firebase-admin");
+
+admin.initializeApp({
+  credential: admin.credential.cert("hospital-475f1-firebase-adminsdk-i0edw-b4ba41b3a0.json"),
+  databaseURL: "https://hospital-475f1.firebaseio.com"
+});
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -27,7 +34,7 @@ var port = process.env.PORT || 80;        // set our port
 // =============================================================================
 var router = express.Router();              // get an instance of the express Router
 
-// test route to make sure everything is working (accessed at GET http://localhost:80/api)
+// test route to make sure everything is working (accessed at GET http://localhost:80/)
 router.get('/patient', function(req, res) {
     var patient_id = parseInt(req.query.id);
     var patient_lat = parseFloat(req.query.lat);
@@ -84,7 +91,27 @@ router.get('/patient', function(req, res) {
     		return;
     	}
     	if (result.length > 0) {
-	    	res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng});
+    		var registrationToken = "e0OvqyBhNBI:APA91bFCQHQ7Xre2QMl5wOTo8Trx83NcJvo-M1H7HtXOGhZWmCK5zfui29_QvxVa1JpIBz6M7GKzfeinRLBH1TaED1D1gBONPf8p0fgO0Jgz4HUq7sv6fpf0b9R19wiUmTXotvssuyXg";
+    		var payload = {
+			  data: {
+			  	patient_id: patient_id.toString(),
+			    patient_lat: patient_lat.toString(),
+			    patient_lng: patient_lng.toString()
+			  }
+			};
+
+			admin.messaging().sendToDevice(registrationToken, payload)
+			  .then(function(response) {
+			    // See the MessagingDevicesResponse reference documentation for
+			    // the contents of response.
+			    console.log("Successfully sent message:", response);
+	    		res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng});
+			  })
+			  .catch(function(error) {
+			    console.log("Error sending message:", error);
+	    		res.json({status: 500, message: "FCM_FAILED"});
+			  });
+
     	}else{
     		res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
     	}
