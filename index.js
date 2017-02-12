@@ -123,9 +123,8 @@ router.get('/patient', function(req, res) {
 });
 
 router.post('/ambulance/registertoken', function(req, res) {
-	var obj = JSON.parse(req.body);
-	var ambulance_id = obj.id;
-	var ambulance_token = obj.token;
+	var ambulance_id = req.body.id;
+	var ambulance_token = req.body.token;
 	console.log(req.body);
     var queryData = {
     	ambulance_id : ambulance_id,
