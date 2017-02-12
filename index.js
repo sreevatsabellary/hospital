@@ -36,7 +36,7 @@ var router = express.Router();              // get an instance of the express Ro
 
 // test route to make sure everything is working (accessed at GET http://localhost:80/)
 router.get('/patient', function(req, res) {
-    var patient_id = parseInt(req.query.id);
+    var patient_id = req.query.id;
     var patient_lat = parseFloat(req.query.lat);
     var patient_lng = parseFloat(req.query.lng);
 
@@ -124,7 +124,7 @@ router.get('/patient', function(req, res) {
 
 
 router.get('/ambulance', function(req, res) {
-    var ambulance_id = parseInt(req.query.id);
+    var ambulance_id = req.query.id;
     var ambulance_lat = parseFloat(req.query.lat);
     var ambulance_lng = parseFloat(req.query.lng);
 
