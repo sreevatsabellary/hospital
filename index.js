@@ -122,6 +122,27 @@ router.get('/patient', function(req, res) {
     })
 });
 
+router.post('/ambulance/registertoken', function(req, res) {
+	var ambulance_id = req.body.id;
+	var ambulance_token = req.body.token;
+	console.log(req.body);
+    var queryData = {
+    	ambulance_id : ambulance_id,
+    	token : ambulance_token
+    };
+
+    var queryString = 'INSERT INTO firebase_tokens SET ?  ON DUPLICATE KEY UPDATE ambulance_id='+queryData.ambulance_id+', token = '+queryData.token;
+    var query = connection.query(queryString, queryData, function(err, result){
+    	if (err) {
+    		res.json({ status: 500, message: "ERROR", error: err.code});
+    		console.log(err);
+    		return;
+    	}
+    	res.json({ status: 200, message: "TOKEN_UPDATED"});
+    })
+
+});
+
 
 router.get('/ambulance', function(req, res) {
     var ambulance_id = req.query.id;
