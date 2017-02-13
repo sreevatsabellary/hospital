@@ -182,7 +182,7 @@ router.get('/ambulance', function(req, res) {
     		return;
     	}
         console.log(query.sql);
-    	res.json({ status: 200, message: "Success"});
+    	res.json({ status: 200, message: "AMBULANCE_LOCATION_UPDATED"});
     })
     //console.log(query.sql);
     //connection.end();
