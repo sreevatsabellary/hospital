@@ -113,7 +113,9 @@ router.get('/patient', function(req, res) {
                             patient_lat: patient_lat.toString(),
                             patient_lng: patient_lng.toString(),
                             hospital_lat: hospitalInfo.hospital_lat.toString(),
-                            hospital_lng: hospitalInfo.hospital_lng.toString()
+                            hospital_lng: hospitalInfo.hospital_lng.toString(),
+                            ambulance_lng: result[0].lat.toString(),
+                            ambulance_lng: result[0].lng.toString()
                           }
                         };
                         var options = {
