@@ -91,7 +91,7 @@ router.get('/patient', function(req, res) {
     		return;
     	}
         console.log('query result length: '+result.length+', result: '+result);
-    	if (result.length < 0) {result.length
+    	if (result.length <= 0) {
     		res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
     		return;
     	}
@@ -101,7 +101,7 @@ router.get('/patient', function(req, res) {
     			res.json({ status: 500, message: "ERROR", error: tokenErr.code});
     			return;
     		}
-    		if (tokenResult.length < 0) {
+    		if (tokenResult.length <= 0) {
                 console.log('result length:'+tokenResult.length);
 	    		res.json({ status: 500, message: "GCM_AMBULANCE_NOT_REGISTERED"});
 	    		return;
