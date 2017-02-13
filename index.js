@@ -101,10 +101,12 @@ router.get('/patient', function(req, res) {
     			return;
     		}
     		if (tokenResult.length < 0) {
+                console.log('result length:'+tokenResult.length);
 	    		res.json({ status: 500, message: "GCM_AMBULANCE_NOT_REGISTERED"});
 	    		return;
     		}
 
+            console.log('result:'+tokenResult);
     		var registrationToken = tokenResult[0].token;
     		var payload = {
 			  data: {
@@ -178,6 +180,7 @@ router.get('/ambulance', function(req, res) {
     		//console.log(err);
     		return;
     	}
+        console.log(query.sql);
     	res.json({ status: 200, message: "Success"});
     })
     //console.log(query.sql);
