@@ -108,10 +108,6 @@ router.get('/patient', function(req, res) {
                         console.log('result:'+tokenResult);
                         var registrationToken = tokenResult[0].token;
                         var payload = {
-                            notification: {
-                            title: "Ambulance Request Received",
-                            body: "This ambulance is alloted to a calling patient"
-                          },
                           data: {
                             patient_id: patient_id.toString(),
                             patient_lat: patient_lat.toString(),
