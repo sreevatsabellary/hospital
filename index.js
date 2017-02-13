@@ -45,7 +45,7 @@ router.get('/patient', function(req, res) {
     //  if (err) throw err
     //      console.log('The solution is: ', rows[0].solution)
 
-/*
+
     var options = {
 		method: 'GET',
   		url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
@@ -64,76 +64,97 @@ router.get('/patient', function(req, res) {
 			'cache-control': 'no-cache' 
 		} 
      };
-*/
 
-/*
+
+
     request(options, function (error, response, body) {
-        if (error) throw new Error(error);
-        if (!error && response.statusCode == 200){
+        if (error){
+            res.json({ status: 500, message: "ERROR", error: error });
+            return;
+        }
+
+        if (response.statusCode == 200){
           var data = JSON.parse(body);
           try{
-          	    var hospitalInfo = {name:data.results[0].name, user_lat: patient_lat, user_lng: patient_lng, hospital_lat:data.results[0].geometry.location.lat, hospital_lng:data.results[0].geometry.location.lng};
-          	    res.json({ status: 200, message: hospitalInfo });
+                if(data.results.length <= 0){
+                    res.json({ status: 500, message: "NO_HOSPITAL_FOUND"});
+                    return;
+                }
+          	    var hospitalInfo = {name:data.results[0].name, hospital_lat:data.results[0].geometry.location.lat, hospital_lng:data.results[0].geometry.location.lng};
+          	    //res.json({ status: 200, message: hospitalInfo });
+                var queryString = "SELECT id AS ambulance_id, lat, lng, ( 6371 * acos( cos( radians("+patient_lat+") ) * cos( radians( lat ) ) * cos( radians( lng ) - radians("+patient_lng+") ) + sin( radians("+patient_lat+") ) * sin( radians( lat ) ) ) ) AS distance FROM ambulance_locations ORDER BY distance LIMIT 0 , 20";
+                connection.query(queryString, function(err, result, fields){
+                    if (err) {
+                        res.json({ status: 500, message: "ERROR", error: err.code});
+                        return;
+                    }
+                    console.log('query result length: '+result.length+', result: '+result);
+                    if (result.length <= 0) {
+                        res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
+                        return;
+                    }
+                    var tokenQueryString = "SELECT token from firebase_tokens where ambulance_id= \'"+result[0].ambulance_id+"\'";
+                    connection.query(tokenQueryString, function(tokenErr, tokenResult, tokenFields){
+                        if(tokenErr){
+                            res.json({ status: 500, message: "ERROR", error: tokenErr.code});
+                            return;
+                        }
+                        if (tokenResult.length <= 0) {
+                            console.log('result length:'+tokenResult.length);
+                            res.json({ status: 500, message: "GCM_AMBULANCE_NOT_REGISTERED"});
+                            return;
+                        }
+
+                        console.log('result:'+tokenResult);
+                        var registrationToken = tokenResult[0].token;
+                        var payload = {
+                            notification: {
+                            title: "Ambulance Request Received",
+                            body: "This ambulance is alloted to a calling patient"
+                          },
+                          data: {
+                            patient_id: patient_id.toString(),
+                            patient_lat: patient_lat.toString(),
+                            patient_lng: patient_lng.toString(),
+                            hospital_lat: hospitalInfo.hospital_lat.toString(),
+                            hospital_lng: hospitalInfo.hospital_lng.toString()
+                          }
+                        };
+                        var options = {
+                          priority: "high",
+                          timeToLive: 60 * 3
+                        };
+                        admin.messaging().sendToDevice(registrationToken, payload, options)
+                          .then(function(admin_response) {
+                            // See the MessagingDevicesResponse reference documentation for
+                            // the contents of response.
+                            if(admin_response.successCount >= 1){
+                                console.log('FCM message sent to ambulance');
+                                res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng, hospital: payload.data});
+                            }else{
+                                res.json({status: 500, message: "FCM_FAILED"});
+                            }
+                            console.log("Successfully sent message:", admin_response);
+                          })
+                          .catch(function(admin_error) {
+                            console.log("Error sending message:", admin_error);
+                            res.json({status: 500, message: "FCM_FAILED", error:admin_error});
+                          });
+                    });
+                    //var registrationToken = "e0OvqyBhNBI:APA91bFCQHQ7Xre2QMl5wOTo8Trx83NcJvo-M1H7HtXOGhZWmCK5zfui29_QvxVa1JpIBz6M7GKzfeinRLBH1TaED1D1gBONPf8p0fgO0Jgz4HUq7sv6fpf0b9R19wiUmTXotvssuyXg";
+                    /*console.log(result);
+                    console.log(result.length);
+                    console.log(result[0]);
+                    console.log(typeof result);*/
+                });
           }catch(err) {
-    		res.json({ status: 500, message: "ERROR" });
+    		res.json({ status: 500, message: "ERROR", error: err });
 		  }
           
         }else{
-          res.json({ status: 500, message: "ERROR" });
+          res.json({ status: 500, message: "ERROR", error: response.statusCode });
         }
     });
-*/
-	
-	var queryString = "SELECT id AS ambulance_id, lat, lng, ( 6371 * acos( cos( radians("+patient_lat+") ) * cos( radians( lat ) ) * cos( radians( lng ) - radians("+patient_lng+") ) + sin( radians("+patient_lat+") ) * sin( radians( lat ) ) ) ) AS distance FROM ambulance_locations ORDER BY distance LIMIT 0 , 20";
-	connection.query(queryString, function(err, result, fields){
-    	if (err) {
-    		res.json({ status: 500, message: "ERROR", error: err.code});
-    		return;
-    	}
-        console.log('query result length: '+result.length+', result: '+result);
-    	if (result.length <= 0) {
-    		res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
-    		return;
-    	}
-    	var tokenQueryString = "SELECT token from firebase_tokens where ambulance_id= \'"+result[0].ambulance_id+"\'";
-    	connection.query(tokenQueryString, function(tokenErr, tokenResult, tokenFields){
-    		if(tokenErr){
-    			res.json({ status: 500, message: "ERROR", error: tokenErr.code});
-    			return;
-    		}
-    		if (tokenResult.length <= 0) {
-                console.log('result length:'+tokenResult.length);
-	    		res.json({ status: 500, message: "GCM_AMBULANCE_NOT_REGISTERED"});
-	    		return;
-    		}
-
-            console.log('result:'+tokenResult);
-    		var registrationToken = tokenResult[0].token;
-    		var payload = {
-			  data: {
-			  	patient_id: patient_id.toString(),
-			    patient_lat: patient_lat.toString(),
-			    patient_lng: patient_lng.toString()
-			  }
-			};
-			admin.messaging().sendToDevice(registrationToken, payload)
-			  .then(function(response) {
-			    // See the MessagingDevicesResponse reference documentation for
-			    // the contents of response.
-			    console.log("Successfully sent message:", response);
-	    		res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng});
-			  })
-			  .catch(function(error) {
-			    console.log("Error sending message:", error);
-	    		res.json({status: 500, message: "FCM_FAILED"});
-			  });
-    	});
-		//var registrationToken = "e0OvqyBhNBI:APA91bFCQHQ7Xre2QMl5wOTo8Trx83NcJvo-M1H7HtXOGhZWmCK5zfui29_QvxVa1JpIBz6M7GKzfeinRLBH1TaED1D1gBONPf8p0fgO0Jgz4HUq7sv6fpf0b9R19wiUmTXotvssuyXg";
-    	/*console.log(result);
-    	console.log(result.length);
-    	console.log(result[0]);
-    	console.log(typeof result);*/
-    })
 });
 
 router.post('/ambulance/registertoken', function(req, res) {
