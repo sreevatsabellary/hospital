@@ -112,9 +112,11 @@ router.get('/patient', function(req, res) {
                             patient_id: patient_id.toString(),
                             patient_lat: patient_lat.toString(),
                             patient_lng: patient_lng.toString(),
+                            hospital_name: hospitalInfo.name.toString(),
                             hospital_lat: hospitalInfo.hospital_lat.toString(),
                             hospital_lng: hospitalInfo.hospital_lng.toString(),
-                            ambulance_lng: result[0].lat.toString(),
+                            ambulance_id: result[0].ambulance_id.toString(),
+                            ambulance_lat: result[0].lat.toString(),
                             ambulance_lng: result[0].lng.toString()
                           }
                         };
@@ -128,7 +130,7 @@ router.get('/patient', function(req, res) {
                             // the contents of response.
                             if(admin_response.successCount >= 1){
                                 console.log('FCM message sent to ambulance');
-                                res.json({ status: 200, message: "Success", ambulance_id: result[0].ambulance_id, ambulance_lat: result[0].lat, ambulance_lng: result[0].lng, hospital: payload.data});
+                                res.json({ status: 200, message: "Success", response: payload.data});
                             }else{
                                 res.json({status: 500, message: "FCM_FAILED"});
                             }
