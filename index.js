@@ -90,7 +90,8 @@ router.get('/patient', function(req, res) {
     		res.json({ status: 500, message: "ERROR", error: err.code});
     		return;
     	}
-    	if (result.length < 0) {
+        console.log('query result length: '+result.length+', result: '+result);
+    	if (result.length < 0) {result.length
     		res.json({ status: 500, message: "NO_AMBULANCE_FOUND"});
     		return;
     	}
