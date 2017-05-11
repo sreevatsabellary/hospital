@@ -11,8 +11,8 @@ var bodyParser = require('body-parser');
 var mysql = require('mysql')
 var connection = mysql.createConnection({
  host: 'localhost',
- user: 'ambulance',
- password: 'ambulance',
+ user: 'root',
+ password: 'root',
  database: 'hospital'
 })
 
