@@ -19,8 +19,8 @@ var connection = mysql.createConnection({
 var admin = require("firebase-admin");
 
 admin.initializeApp({
-  credential: admin.credential.cert("hospital-475f1-firebase-adminsdk-i0edw-b4ba41b3a0.json"),
-  databaseURL: "https://hospital-475f1.firebaseio.com"
+  credential: admin.credential.cert("h.json"),
+  databaseURL: "https://hospital-d31c0.firebaseio.com"
 });
 
 // configure app to use bodyParser()
@@ -56,7 +56,7 @@ router.get('/patient', function(req, res) {
 			type: 'hospital',
 			keyword: 'hospital',
 			rankby: 'distance',
-			key: 'AIzaSyDo74Briag9bYDAWovUvyzz2C1-LWI2rzU' 
+			key: 'AIzaSyBWmPBRRNJDtbXAOesnPkDhokFbdoa9o1w' 
 		},
 		headers: 
 		{ 
