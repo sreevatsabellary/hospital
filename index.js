@@ -19,7 +19,7 @@ var connection = mysql.createConnection({
 var admin = require("firebase-admin");
 
 admin.initializeApp({
-  credential: admin.credential.cert("h.json"),
+  credential: admin.credential.cert("hospital-d31c0-firebase-adminsdk-i2xyv-ea130cf018.json"),
   databaseURL: "https://hospital-d31c0.firebaseio.com"
 });
 
