@@ -56,7 +56,7 @@ router.get('/patient', function(req, res) {
 			type: 'hospital',
 			keyword: 'hospital',
 			rankby: 'distance',
-			key: 'AIzaSyBWmPBRRNJDtbXAOesnPkDhokFbdoa9o1w' 
+			key: 'AIzaSyDjgOqciOIijscHr4cveEIVs9PLE_2jWA8' 
 		},
 		headers: 
 		{ 
